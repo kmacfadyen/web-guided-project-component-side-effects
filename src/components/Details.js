@@ -7,18 +7,49 @@ export default function Details(props) {
   const [details, setDetails] = useState(null)
 
   // 👉 TASK 4 - Create a side effect 🥇 that runs only after first render.
+  // 
+  useEffect(() => {
+    console.log("After first DOM surgery");
+  }, [])
 
   // 👉 TASK 5 - Create a side effect 👻 that runs only after first render
   // and puts a 'click' event handler on document.
   // See what happens if we don't clean up.
+  useEffect(() => {
+    console.log("adding click listener");
+    const sillyClickListener = () => {
+      console.log("Here's a random number: " + Math.floor(Math.random() * 11); // Generates random number under 10
+    }
+    document.addEventListener('click', sillyClickListener);
+    // New eventlistener is attached each time, will keep piling up
+
+    return () => {
+      console.log("cleaning up eventlistener");
+      document.removeEventListener('click', sillyClickListener);
+      // Now we'll only get one each time we click
+    }
+  }, [])
 
   // 👉 TASK 6 - Create a side effect 🥵 that runs after every render.
+  useEffect(() = > {
+    console.log("Oh no!");
+  }) // With no empty dependency array, it runs twice
 
   // 👉 TASK 7 - Create a side effect 📲 that runs when a particular variable changes:
   // Whenever props.friendId updates we should trigger a fetch for details of the friend.
   // The URL should end up looking like `http://localhost:4000/friends/1?api_key=xyz`
   // On success, shove the details of the friend in `details` slice of state
+  useEffect(() => {
+    axios.get(`${BASE_URL}/friends/${friendId}?api_key=${API_KEY}`)
+    .then(res => {
+      setDetails(res.data);
+    }).catch(err => console.error(err))
+  }, [friendId])
 
+  /* 
+  /friends => GET
+  /friends/:id => GET POST PUT PATCH
+  */
   return (
     <div className='container'>
       <h2>Details (of friend with id {friendId}):</h2>
